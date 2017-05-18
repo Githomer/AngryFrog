@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSSample</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+    $(function() {
+        
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize?",
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","9ea940a34ebd408ca9465115a94e9f39");
+            },
+            type: "POST",
+            // Request body
+            data: JSON.stringify({"url": "http://cfile9.uf.tistory.com/image/233F604857F3ACD6208420"}),
+			//console.log(data);
+        })
+        .done(function(data) {
+            alert("success");
+			console.log(data);
+			//var objdata = eval("("+data+")");
+			JIHAN=data[0].scores.happiness;			
+			document.write(JIHAN);
+			
+			
+
+        })
+        .fail(function() {
+            alert("error");
+        });
+    });
+</script>
+
+</body>
+</html>
