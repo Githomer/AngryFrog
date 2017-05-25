@@ -1,69 +1,78 @@
-function Remote($scope, SpeechService, Focus) {
+function Weather($scope, $interval, $http, GeolocationService) {
 
-	function showRemote() {
-		const interfaces = require('os').networkInterfaces()
-		let addresses = []
-		for (let k in interfaces) {
-			for (let k2 in interfaces[k]) {
-				let address = interfaces[k][k2]
-				if (address.family === 'IPv4' && !address.internal) {
-					addresses.push(address.address)
-				}
-			}
+	var language = (typeof config.general.language !== 'undefined') ? config.general.language.substr(0, 2) : "en"
+	var geoposition = {}
+	var weather = {}
+
+	weather.get = function () {
+		return $http.jsonp('https://api.darksky.net/forecast/' + config.forecast.key + '/' +
+            geoposition.coords.latitude + ',' + geoposition.coords.longitude + '?units=' +
+            config.forecast.units + "&lang=" + language + "&callback=JSON_CALLBACK")
+            .then(function (response) {
+	return weather.forecast = response;
+});
+	};
+
+	weather.minutelyForecast = function () {
+		if (weather.forecast === null) {
+			return null;
 		}
-		$scope.remoteText = addresses[0] + ":" + config.remote.port;
-		$scope.remoteImage = "https://chart.googleapis.com/chart?cht=qr&chs=400x400&chl=http://" + $scope.remoteText;
-		Focus.change("remote");
+		return weather.forecast.data.minutely;
 	}
-	
-	
-	
-	
-	/*$scope.remoteText = "allText";
-	$scope.remoteImage = "/home/pi/show.jpg";
-	Focus.change("remote");*/
-/*	function FileReader(){
-		//var reader = new FileReader();
-		//reader.readAsText(file, "UTF-8");
-	   	
-		$scope.remoteText = "reader.result";
-		$scope.remoteImage = "/home/pi/show.jpg";
-		Focus.change("remote");
-	}*/
 
-	if (config.remote && config.remote.enabled) {
-		SpeechService.addCommand('show_remoteQR', function () {
-			//setInterval(FileReader(), 3000);
-			showRemote()
+    //Returns the current forecast along with high and low tempratures for the current day
+	weather.currentForecast = function () {
+		if (weather.forecast === null) {
+			return null;
+		}
+		weather.forecast.data.currently.day = moment.unix(weather.forecast.data.currently.time).format('ddd');
+		weather.forecast.data.currently.temperature = parseFloat(weather.forecast.data.currently.temperature).toFixed(0);
+		weather.forecast.data.currently.wi = "wi-forecast-io-" + weather.forecast.data.currently.icon;
+		weather.forecast.data.currently.iconAnimation = weather.forecast.data.currently.icon;
+		return weather.forecast.data.currently;
+	}
+
+	weather.weeklyForecast = function () {
+		if (weather.forecast === null) {
+			return null;
+		}
+        // Add human readable info to info
+		for (var i = 0; i < weather.forecast.data.daily.data.length; i++) {
+			weather.forecast.data.daily.data[i].day = moment.unix(weather.forecast.data.daily.data[i].time).format('ddd');
+			weather.forecast.data.daily.data[i].temperatureMin = parseFloat(weather.forecast.data.daily.data[i].temperatureMin).toFixed(0);
+			weather.forecast.data.daily.data[i].temperatureMax = parseFloat(weather.forecast.data.daily.data[i].temperatureMax).toFixed(0);
+			weather.forecast.data.daily.data[i].wi = "wi-forecast-io-" + weather.forecast.data.daily.data[i].icon;
+			weather.forecast.data.daily.data[i].counter = String.fromCharCode(97 + i);
+			weather.forecast.data.daily.data[i].iconAnimation = weather.forecast.data.daily.data[i].icon;
+		}
+		return weather.forecast.data.daily;
+	}
+
+	weather.hourlyForecast = function () {
+		if (weather.forecast === null) {
+			return null;
+		}
+		weather.forecast.data.hourly.day = moment.unix(weather.forecast.data.hourly.time).format('ddd')
+		return weather.forecast.data.hourly;
+	}
+
+	GeolocationService.getLocation({ enableHighAccuracy: true }).then(function (geopo) {
+		geoposition = geopo;
+		refreshWeatherData(geoposition);
+		$interval(refreshWeatherData, config.forecast.refreshInterval * 60000 || 7200000)
+	});
+
+	function refreshWeatherData() {
+		weather.get().then(function () {
+			$scope.currentForecast = weather.currentForecast();
+			$scope.weeklyForecast = weather.weeklyForecast();
+			$scope.hourlyForecast = weather.hourlyForecast();
+			$scope.minutelyForecast = weather.minutelyForecast();
+		}, function (err) {
+			console.error(err)
 		});
-	} 
-    
-
-	$scope.remoteImage = "/home/pi/show.jpg";
-	var check = 0;
-    // First Run
-	if (config.remote.firstRun) {
-		$scope.firstRun = true;
-		setInterval(function(){
-			//Focus.change("remote");
-			if (check == 0) {
-				//alert("0");
-				//$('#taeguk').hide();
-				$scope.remoteImage = "/home/pi/show.jpg";
-				check = 1;
-			}
-			else {
-				//alert("1");
-				//$('#taeguk').show(0);
-				$scope.remoteImage = "/home/pi/show2.jpg";
-				check = 0;
-			}
-			$('#taeguk').hide().show(0);
-		}, 1000);
-		Focus.change("remote");
-		//showRemote()
 	}
 }
 
 angular.module('SmartMirror')
-    .controller('Remote', Remote);
+    .controller('Weather', Weather);
