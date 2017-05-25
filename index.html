@@ -33,7 +33,7 @@
 <body ng-controller="MirrorCtrl" ng-cloak>
   <div class="top">
     <div class="top-left">
-      <div ng-include="'plugins/datetime/index.html'"></div>
+		<div ng-include="'plugins/datetime/index.html'"></div>
 
 	  <!-- not used
       <div ng-include="'plugins/calendar/index.html'"></div>
@@ -44,9 +44,9 @@
 	<!------------------------------------------------------------------------------------------------------------------- -->
     <div class="top-right">
 
-	  <!-- temp
+		<!-- temp-->
       <div ng-include="'plugins/weather/index.html'"></div>
-      -->
+      
 
 
 
@@ -66,9 +66,10 @@
       <h1 ng-controller="Greeting" ng-bind="greeting" ng-cloak></h1>
 
 	    
-	   <div ng-include="'plugins/remote/index.html'"></div>    
+	   <div id='taeguk' ng-include="'plugins/remote/index.html'"></div> 
+	   <!--<div ng-include="'plugins/remote/index.html'"></div>-->    
       	   
-
+<!--
       <div ng-include="'plugins/soundcloud/index.html'"></div>
       <div ng-include="'plugins/map/index.html'"></div>
       <div ng-include="'plugins/xkcd/index.html'"></div>
@@ -78,37 +79,39 @@
       <div ng-include="'plugins/reminder/index.html'"></div>
       <div ng-include="'plugins/timer/index.html'"></div>
       <div ng-include="'plugins/todoist/index.html'"></div>
+-->
     </div>
 
 
 
-    <div class="bottom-center">
+	<!--@@@@@<div class="bottom-center">-->
       <!-- Command list -->
-      <div ng-include="'plugins/commands/index.html'"></div>
+	  <!--@@@  <div ng-include="'plugins/commands/index.html'"></div>-->
 	  <!-- <div ng-include="'plugins/rss/index.html'"></div> -->
 
-      <div class="error" ng-bind="speechError" ng-show="speechError"></div>
+  <!--@@@@    <div class="error" ng-bind="speechError" ng-show="speechError"></div>
       <div class="partial-result" ng-bind="partialResult" ng-hide="speechError"></div>
-    </div>
+	  </div>-->
 	<!------------------------------------------------------------------------------------------------------------------- -->
-
+	
 
 	<!------------------------------------------------------------------------------------------------------------------- -->
-    <div class="bottom-left">
+<!--@@@    <div class="bottom-left">
       <div ng-include="'plugins/fitbit/index.html'" ng-if="config.fitbit.creds"></div>
       <div ng-include="'plugins/scrobbler/index.html'"></div>
-    </div>
+	  </div>-->
 	<!------------------------------------------------------------------------------------------------------------------- -->
 
 
 	<!------------------------------------------------------------------------------------------------------------------- -->
-    <div class="bottom-right">
+	<!--@@@ <div class="bottom-right">-->
       <!-- Someday something will live here -->
-    </div>
+	  <!--@@@@ </div>-->
 	<!------------------------------------------------------------------------------------------------------------------- -->
 
 
-    <div ng-controller="Maker"></div>
+	<!--    <div ng-controller="Maker"></div>-->
+	
   </div>
 
 
@@ -167,12 +170,12 @@
   <script src="plugins/timer/controller.js"></script>
 
 
-  <!-- Top Right
+  <!-- Top Right-->
   <script src="plugins/weather/controller.js"></script>
   <script src="plugins/traffic/controller.js"></script>
   <script src="plugins/tvshows/controller.js"></script>
   <script src="plugins/stock/controller.js"></script>
-  -->
+  
 
 
   <script src="plugins/fitbit/controller.js"></script>
